@@ -2,6 +2,7 @@ module processor_element(
     input [7:0] input_in,
     input [7:0] weight_in,
     input clk,
+    input set_to_zero,
     output [31:0] sum ,
     output [7:0] input_out, 
     output [7:0] weight_out
@@ -16,9 +17,17 @@ module processor_element(
     assign product = (input_val * weight);
     
     always @ (posedge clk) begin
-        sum <= sum + product;
-        input_out <= input_in;
-        weight_out <= weight_in;
+        if(set_to_zero) begin
+            sum <= 0;
+            input_out <= 0;
+            weight_out <= 0;
+
+        end
+        else begin
+            sum <= sum + product;
+            input_out <= input_in;
+            weight_out <= weight_in;
+        end
     end  
 
 endmodule

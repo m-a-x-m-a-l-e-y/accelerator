@@ -7,7 +7,6 @@ module processing_array#(
     input [PE_ROW* DATA_WIDTH - 1: 0] Matrix_A_Column, // passed through inputs
     input [PE_COL * DATA_WIDTH- 1: 0] Matrix_B_Row,    // passed through weights
     input clk,
-    input set_to_zeros,
     input clear_arr,
     output [PE_COL * PE_ROW]Matrix_C_flat
     
