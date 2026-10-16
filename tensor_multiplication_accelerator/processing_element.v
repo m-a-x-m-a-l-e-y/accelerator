@@ -1,4 +1,4 @@
-module processor_element(
+module processing_element(
     input [7:0] input_in,
     input [7:0] weight_in,
     input clk,
@@ -14,7 +14,7 @@ module processor_element(
     // - input_in and weight_in are assigned in the processing array module on clock posedge
     wire [15:0] product;
 
-    assign product = (input_val * weight);
+    assign product = (input_in * weight_in);
     
     always @ (posedge clk) begin
         if(set_to_zero) begin
