@@ -8,7 +8,7 @@ module processing_array#(
     input [PE_COL * DATA_WIDTH- 1: 0] Matrix_B_Row,    // passed through weights
     input clk, // just a clock
     input set_to_zero, // used as a signal to reset array element sums to 0s
-    output [PE_COL * PE_ROW - 1: 0] Matrix_C_flat // This is the answer matrix, or at least a part of the answer matrix, as if the input matrices are bigger than 4x4, they will need to be done in parts
+    output [(PE_COL * PE_ROW)* SUM_WIDTH - 1: 0] Matrix_C_flat // This is the answer matrix, or at least a part of the answer matrix, as if the input matrices are bigger than 4x4 x 32bit, they will need to be done in parts
     
 );
 
@@ -26,14 +26,14 @@ module processing_array#(
 
 // Wire 2d grid
 
-wire [PE_ROW * PE_COL - 1 : 0] positional_matrix_flat; // represents the size of the PE matrix so routing can be done though it
-wire [PE_ROW * PE_COL - 1 : 0] sum_matrix_flat; // represents the size of the PE matrix so routing can be done though it
+wire [(PE_ROW * PE_COL)*DATA_WIDTH - 1 : 0] positional_matrix_flat; // represents the size of the PE matrix so routing can be done though it
+wire [(PE_ROW * PE_COL)* SUM_WIDTH - 1 : 0] sum_matrix_flat; // represents the size of the PE matrix so routing can be done though it
 
 
-wire [(PE_ROW * PE_COL)* 8 - 1 : 0] input_out_matrix_flat; // represents the size of the PE matrix so routing can be done though it
-wire [(PE_ROW * PE_COL)* 8 - 1 : 0] weight_out_matrix_flat; // represents the size of the PE matrix so routing can be done though it
-wire [(PE_ROW * 8) - 1               : 0] temp_holding_right;
-wire [(PE_COL * 8) - 1               : 0] temp_holding_bottom;
+wire [(PE_ROW * PE_COL)* DATA_WIDTH - 1 : 0] input_out_matrix_flat; // represents the size of the PE matrix so routing can be done though it
+wire [(PE_ROW * PE_COL)* DATA_WIDTH - 1 : 0] weight_out_matrix_flat; // represents the size of the PE matrix so routing can be done though it
+wire [(PE_ROW * DATA_WIDTH) - 1               : 0] temp_holding_right;
+wire [(PE_COL * DATA_WIDTH) - 1               : 0] temp_holding_bottom;
 
 // Construct array of processing elements:
 genvar i;
@@ -49,23 +49,25 @@ generate
             wire [7:0] pe_input_out; 
             wire [7:0] pe_weight_out; 
 
-            processing_element piece(  .input_in(j == 0 ? Matrix_A_Column[i] : input_out_matrix_flat[8 * left_element +: 8]),
-                                        .weight_in(i == 0 ? Matrix_B_Row[j] : weight_out_matrix_flat[8 * top_element +: 8]),
+            processing_element piece(  .input_in(j == 0 ? Matrix_A_Column[DATA_WIDTH*i +: DATA_WIDTH] : input_out_matrix_flat[DATA_WIDTH * left_element +: DATA_WIDTH]),
+                                        .weight_in(i == 0 ? Matrix_B_Row[DATA_WIDTH*j +: DATA_WIDTH] : weight_out_matrix_flat[DATA_WIDTH * top_element +: DATA_WIDTH]),
                                         .input_out(pe_input_out), 
                                         .weight_out(pe_weight_out), 
-                                        .sum(sum_matrix_flat[(PE_COL * i) + j]),
+                                        .sum(sum_matrix_flat[ ((PE_COL * i) + j)*SUM_WIDTH +: SUM_WIDTH]),
                                         .clk(clk),
                                         .set_to_zero(set_to_zero)
                                     );
+            // Garbage pile : 
+            // {{(SUM_WIDTH - 2*DATA_WIDTH){1'b0}},
 
             // pe_input_out and pe_weight out above are currently not wired to anything, so this if block says which 
             // wires these temp connections actually connect to
             // This is needed because outputs can't be assigned to ternary operations 
 
             if (j == (PE_COL - 1))  begin : handle_pe_input_out
-                assign pe_input_out = temp_holding_right[i * 8+:8];
+                assign pe_input_out = temp_holding_right[i * DATA_WIDTH +: DATA_WIDTH];
             end else begin : handle_pe_weight_out
-                assign pe_input_out = input_out_matrix_flat[this_element * 8 +: 8];
+                assign pe_input_out = input_out_matrix_flat[this_element * DATA_WIDTH +: DATA_WIDTH];
             end
         
         end 
@@ -76,7 +78,7 @@ assign Matrix_C_flat = sum_matrix_flat;
 
 // Logic handling:
 always @(posedge clk) begin
-    
+    // need to drive input_in and weight_in with non blacking assignments to work with the reg variables in procesing_element
 
 end
 

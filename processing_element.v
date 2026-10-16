@@ -1,11 +1,14 @@
-module processing_element(
+module processing_element#(
+    parameter SUM_WIDTH = 32,
+    parameter DATA_WIDTH = 8
+)(
     input [7:0] input_in,
     input [7:0] weight_in,
     input clk,
     input set_to_zero,
-    output [31:0] sum ,
-    output [7:0] input_out, 
-    output [7:0] weight_out
+    output reg [31:0] sum ,
+    output reg [7:0] input_out, 
+    output reg [7:0] weight_out
 );
     // Notes : 
     // - sum is a 32 bit integer, inputs are 8 bits
@@ -15,7 +18,6 @@ module processing_element(
     wire [15:0] product;
 
     assign product = (input_in * weight_in);
-    
     always @ (posedge clk) begin
         if(set_to_zero) begin
             sum <= 0;
@@ -24,7 +26,7 @@ module processing_element(
 
         end
         else begin
-            sum <= sum + product;
+            sum <= sum +  {{(SUM_WIDTH - 2*DATA_WIDTH){1'b0}}, product}; // Sign extends product explicitly
             input_out <= input_in;
             weight_out <= weight_in;
         end

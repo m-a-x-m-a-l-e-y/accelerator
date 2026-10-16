@@ -1,0 +1,34 @@
+timestamp: "16184324600"
+arch: ICE40
+fpga_info {
+  fpga_id: "ice40hx1k-tq144"
+  part_num: "ICE40HX1K-TQ144"
+  size: "1k"
+  ice40_params {
+    type: "hx1k"
+    package: "tq144"
+  }
+}
+environment {
+  platform_id: "windows-amd64"
+  is_windows: true
+  terminal_mode: FORCE_TERMINAL
+  theme_name: "light"
+  debug_level: 0
+  yosys_path: "C:\\Users\\max\\.apio\\packages\\oss-cad-suite\\share\\yosys"
+  trellis_path: "C:\\Users\\max\\.apio\\packages\\oss-cad-suite\\share\\trellis"
+  scons_shell_id: "cmd"
+  xilinx_prjxray_db_path: "C:\\Users\\max\\.apio\\packages\\openxc7\\share\\nextpnr\\external\\prjxray-db"
+  xilinx_chipdb_path: "C:\\Users\\max\\.apio\\packages\\openxc7\\chipdb"
+}
+apio_env_params {
+  env_name: "default"
+  board_id: "icestick"
+  top_module: "accelerator"
+}
+target {
+  lint {
+    nosynth: false
+    novlt: false
+  }
+}
