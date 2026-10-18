@@ -1,0 +1,23 @@
+[*] GTKWave display configuration for 'apio sim accelerator_tb.v'
+[*] THIS FILE WAS GENERATED AUTOMATICALLY BY APIO.
+[*] DO NOT EDIT IT MANUALLY!
+[*] To customize this file, run 'apio sim accelerator_tb.v'
+[*] and save the file from GTKWave.
+
+[*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
+
+[*]
+accelerator_tb.clk
+accelerator_tb.cycle[31:0]
+accelerator_tb.DATA_WIDTH
+accelerator_tb.i[31:0]
+accelerator_tb.j[31:0]
+accelerator_tb.Matrix_A[127:0]
+accelerator_tb.Matrix_B[127:0]
+accelerator_tb.Matrix_C[511:0]
+accelerator_tb.MTRXA_COL
+accelerator_tb.MTRXA_ROW
+accelerator_tb.MTRXB_COL
+accelerator_tb.MTRXB_ROW
+accelerator_tb.NUM_CYCLES
+accelerator_tb.SUM_WIDTH

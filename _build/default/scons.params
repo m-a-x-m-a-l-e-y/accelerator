@@ -1,4 +1,4 @@
-timestamp: "16184324600"
+timestamp: "18022253207"
 arch: ICE40
 fpga_info {
   fpga_id: "ice40hx1k-tq144"
@@ -27,8 +27,9 @@ apio_env_params {
   top_module: "accelerator"
 }
 target {
-  lint {
-    nosynth: false
-    novlt: false
+  sim {
+    force_sim: false
+    no_gtkwave: false
+    detach_gtkwave: false
   }
 }

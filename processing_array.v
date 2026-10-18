@@ -65,10 +65,15 @@ generate
             // This is needed because outputs can't be assigned to ternary operations 
 
             if (j == (PE_COL - 1))  begin : handle_pe_input_out
-                assign pe_input_out = temp_holding_right[i * DATA_WIDTH +: DATA_WIDTH];
-            end else begin : handle_pe_weight_out
-                assign pe_input_out = input_out_matrix_flat[this_element * DATA_WIDTH +: DATA_WIDTH];
+                assign temp_holding_right[i * DATA_WIDTH +: DATA_WIDTH] = pe_input_out;
+            end else begin 
+                assign input_out_matrix_flat[this_element * DATA_WIDTH +: DATA_WIDTH] = pe_input_out;
             end
+            if (i == (PE_ROW - 1))  begin : handle_pe_weight_out
+                assign temp_holding_bottom[j * DATA_WIDTH +: DATA_WIDTH] = pe_weight_out;
+            end else begin
+                assign weight_out_matrix_flat[this_element * DATA_WIDTH +: DATA_WIDTH] = pe_weight_out;
+            end    
         
         end 
     end

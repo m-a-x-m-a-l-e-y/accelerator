@@ -13,7 +13,7 @@ module accelerator#(
     output [(MTRXA_ROW * MTRXB_COL)*SUM_WIDTH - 1: 0] result // Certain matrix sizes will break under this, right now only works with 4x4 x 4x4 => 4x4 result
 );
 
-wire reset;
+reg reset = 1'b1;
 
 reg [7:0] row_index = 0; // arbitrary length for now but 128x128 should be a good matrix maximum size to start with.
 reg [7:0] column_index = 0;
@@ -25,6 +25,7 @@ always @ (posedge clk) begin
     if(reset) begin 
         row_index <= 0;
         column_index <= 0;
+        reset <= 0;
     end
     else begin 
         row_index <= row_index + 1;
@@ -49,11 +50,20 @@ endgenerate
 // Build Matrix B Input Row ==========================
  // Learn why +: works but [:] doesn't ; [:] causes non-constant ? 
 wire [8*MTRXB_COL - 1:0] Matrix_B_Row;
-assign Matrix_B_Row = Matrix_B[row_index*DATA_WIDTH +: DATA_WIDTH*MTRXB_COL];
+assign Matrix_B_Row = Matrix_B[row_index*MTRXB_COL*DATA_WIDTH +: DATA_WIDTH*MTRXB_COL];
 // ===================================================
 
+
+
+// Offset Matrix_A_Column and Matrix_B_Row
+// The rows and columns of these need to be staggered based on the current cycle
+//
+wire [(MTRXB_ROW * MTRXB_COL * DATA_WIDTH) - 1 : 0] Matrix_B_Row_Offset;
+wire [(MTRXA_ROW * MTRXA_COL * DATA_WIDTH) - 1 : 0] Matrix_A_Column_Offset;
+
+
 // Build Array of Processing Elements ================
-processing_array pe_arr(.Matrix_A_Column(Matrix_A_Column), .Matrix_B_Row(Matrix_B_Row), .clk(clk), .set_to_zero(reset), .Matrix_C_flat(result));
+processing_array pe_arr(.Matrix_A_Column(Matrix_A_Column_Offset), .Matrix_B_Row(Matrix_B_Row_Offset), .clk(clk), .set_to_zero(reset), .Matrix_C_flat(result));
 // ===================================================
 
 endmodule
