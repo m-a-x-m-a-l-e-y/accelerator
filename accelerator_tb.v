@@ -37,11 +37,59 @@ module accelerator_tb#(
 
     initial begin
         // Fill A and B (example: A[k] = k+1, B = identity)
-        for (i = 0; i < MTRXA_ROW*MTRXA_COL; i = i + 1)
-            Matrix_A[i*DATA_WIDTH +: DATA_WIDTH] = i + 1;
-        for (i = 0; i < MTRXB_ROW; i = i + 1)
-            for (j = 0; j < MTRXB_COL; j = j + 1)
-                Matrix_B[(i*MTRXB_COL + j)*DATA_WIDTH +: DATA_WIDTH] = (i == j);
+        
+
+        // Case 0.0 A x Identity => Identity
+        // Matrix_A = {
+        //     8'd16, 8'd15, 8'd14, 8'd13,   // row 3
+        //     8'd12, 8'd11, 8'd10, 8'd9,    // row 2
+        //     8'd8,  8'd7,  8'd6,  8'd5,    // row 1
+        //     8'd4,  8'd3,  8'd2,  8'd1     // row 0
+        // };
+        // Matrix_B = {
+        //     8'd1, 8'd0, 8'd0, 8'd0,       // row 3
+        //     8'd0, 8'd1, 8'd0, 8'd0,       // row 2
+        //     8'd0, 8'd0, 8'd1, 8'd0,       // row 1
+        //     8'd0, 8'd0, 8'd0, 8'd1        // row 0
+        // };
+
+        // Case 0.1 I X B
+        // Matrix_A = {
+        //     8'd1, 8'd0, 8'd0, 8'd0,
+        //     8'd0, 8'd1, 8'd0, 8'd0,
+        //     8'd0, 8'd0, 8'd1, 8'd0,
+        //     8'd0, 8'd0, 8'd0, 8'd1
+        // };
+        // Matrix_B = {
+        //     8'd16, 8'd15, 8'd14, 8'd13,
+        //     8'd12, 8'd11, 8'd10, 8'd9,
+        //     8'd8,  8'd7,  8'd6,  8'd5,
+        //     8'd4,  8'd3,  8'd2,  8'd1
+        // };
+
+        // Case 0.2 A X B
+        // Matrix_A = {
+        //     8'd16, 8'd15, 8'd14, 8'd13,
+        //     8'd12, 8'd11, 8'd10, 8'd9,
+        //     8'd8,  8'd7,  8'd6,  8'd5,
+        //     8'd4,  8'd3,  8'd2,  8'd1
+        // };
+        // Matrix_B = {
+        //     8'd1, 8'd0, 8'd0, 8'd0,       // row 3: only col 3
+        //     8'd1, 8'd1, 8'd0, 8'd0,       // row 2: cols 2-3
+        //     8'd1, 8'd1, 8'd1, 8'd0,       // row 1: cols 1-3
+        //     8'd1, 8'd1, 8'd1, 8'd1        // row 0: all cols
+        // };
+
+        // Case 0.3 A X A
+        Matrix_A = {
+            8'd16, 8'd15, 8'd14, 8'd13,
+            8'd12, 8'd11, 8'd10, 8'd9,
+            8'd8,  8'd7,  8'd6,  8'd5,
+            8'd4,  8'd3,  8'd2,  8'd1
+        };
+        Matrix_B = Matrix_A;
+
 
         // Hold reset for two cycles
         repeat (2) @(posedge clk);
